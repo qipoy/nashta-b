@@ -1,0 +1,78 @@
+
+
+mern-api-meeting/v1/meetings
+
+request-POST /meetings/post:
+{
+  "title":"Meeting with CEO",
+  "location": "Kafe Betawi",
+  "participant": ["indra", "dwi", "nini"],
+  "date": "12122021",
+  "note": "jangan bawa hewan peliharaan",
+  "image": "bla blabaksd"
+}
+
+Res successs: 
+network status 201, 400
+
+{
+  "messages":"appointment successsfull",
+  "data": {
+    "id":""
+    "title":"Meeting with CEO",
+    "location": "Kafe Betawi",
+    "participant": ["indra", "dwi", "nini"],
+    "note": "jangan bawa hewan peliharaan",
+    "date": "12122021",
+     "image": "bla blabaksd",
+     "created_at": "12421313"
+  }
+}
+
+
+Error res: 
+
+400
+{
+  "status": "fail",
+  "message":"value must be string"
+}
+
+
+
+=================================
+
+GET /meetings
+
+
+[
+  {
+  "title":"Meeting with CEO",
+  "location": "Kafe Betawi",
+  "participant": ["indra", "dwi", "nini"],
+  "date": "12122021",
+  "image": "bla blabaksd"
+},
+{
+  "title":"Meeting with CEO",
+  "location": "Kafe Betawi",
+  "participant": ["indra", "dwi", "nini"],
+  "date": "12122021",
+  "image": "bla blabaksd"
+},
+{
+  "title":"Meeting with CEO",
+  "location": "Kafe Betawi",
+  "participant": ["indra", "dwi", "nini"],
+  "date": "12122021",
+  "image": "bla blabaksd"
+},
+{
+  "title":"Meeting with CEO",
+  "location": "Kafe Betawi",
+  "participant": ["indra", "dwi", "nini"],
+  "date": "12122021",
+  "image": "bla blabaksd"
+}
+
+]

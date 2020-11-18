@@ -1,17 +1,35 @@
 const express = require("express");
 const morgan = require("morgan");
+const multer = require("multer");
+const path = require("path");
 
 const meetings = require("./src/router/meeting");
-
 const cors = require("cors");
+const mongoose = require("mongoose");
 
+//multer storage config
+const fileStorage = multer.diskStorage({
+  destination: (req, File, cb) => {
+    cb(null, "images");
+  },
 
-const MongoClient = require("mongodb").MongoClient;
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + "-" + file.originalname.trim());
+  },
+});
 
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan("dev"));
+// multer filter config
+const fileFilterConfig = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 //Cors Definition Options
 const options = {
@@ -27,19 +45,23 @@ const options = {
   origin: "http://localhost:8000",
 };
 
+const app = express();
+app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 app.use(cors(options));
+
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilterConfig }).single("image")
+);
+
+app.use(morgan("dev"));
 
 const PORT = process.env.PORT || 8000;
 
-// ROUTE meeting
-app.use("/meetings", meetings);
-
-const uri = `mongodb+srv://indra:berhasil@cluster0.umzh2.mongodb.net/Cluster0?retryWrites=true&w=majority`;
-
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect((err) => {
-  client.close();
-});
+// ROUTE meetings
+app.use("/v1/meetings", meetings);
 
 // Error handling
 app.use((req, res, next) => {
@@ -49,14 +71,22 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-    error: {
-      message: error.message,
-    },
-  });
+  const status = error.errorStatus || 500;
+  const message = error.message;
+  const data = error.data;
+
+  res.status(status).json({ message, data });
 });
 
-app.listen(PORT, () => {
-  console.log(`⚡️[server]: server start on ${PORT} `);
-});
+const mongoAtlasLUrl = `mongodb+srv://indrabinridwan:berhasil@cluster0.qibgj.mongodb.net/meetings?retryWrites=true&w=majority`;
+
+mongoose
+  .connect(mongoAtlasLUrl)
+  .then(
+    app.listen(PORT, () => {
+      console.log(
+        `⚡️[server]: server start on ${PORT} + connection to Atlas success `
+      );
+    })
+  )
+  .catch((err) => console.log(`⚡[server]: server error `, err));
