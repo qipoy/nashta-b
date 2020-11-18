@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "author": "indra susila <indrabinridwan@gmail.com> (instagram.com/indrabinridan)",
   "license": "ISC",
